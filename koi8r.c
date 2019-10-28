@@ -149,8 +149,8 @@ static unsigned char utf8[128][3] = {
 };
 
 
-// koi8-r -> ibm866
-static unsigned char ibm866[128] = {
+// koi8-r -> cp866
+static unsigned char cp866[128] = {
     196, 179, 218, 191, 192, 217, 195, 180,
     194, 193, 197, 223, 220, 219, 221, 222,
     176, 177, 178, 244, 254, 249, 251, 247,
@@ -232,7 +232,7 @@ size_t koi8r_to_utf8(const char *str, char *buf, size_t size) {
 }
 
 
-/* Translate koi8-r string to ibm866 string.
+/* Translate koi8-r string to cp866 string.
  * String can be truncated if there is not enough buffer size.
  *
  * In:
@@ -253,7 +253,7 @@ size_t koi8r_to_866(const char *str, char *buf, size_t size) {
         if (c < 0x80) {
             d[dlen++] = c;
         } else {
-            d[dlen++] = ibm866[c-0x80];
+            d[dlen++] = cp866[c-0x80];
         }
     }
 
