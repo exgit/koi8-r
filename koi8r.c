@@ -1,7 +1,7 @@
 #include "koi8r.h"
 
 
-// utf-8 encoding for koi8-r characters
+// koi8-r -> utf-8
 static unsigned char utf8[128][3] = {
     {226, 148, 128},
     {226, 148, 130},
@@ -149,6 +149,48 @@ static unsigned char utf8[128][3] = {
 };
 
 
+// koi8-r -> ibm866
+static unsigned char ibm866[128] = {
+    196, 179, 218, 191, 192, 217, 195, 180,
+    194, 193, 197, 223, 220, 219, 221, 222,
+    176, 177, 178, 244, 254, 249, 251, 247,
+    243, 242, 255, 245, 248, 253, 250, 246,
+    205, 186, 213, 241, 214, 201, 184, 183,
+    187, 212, 211, 200, 190, 189, 188, 198,
+    199, 204, 181, 240, 182, 185, 209, 210,
+    203, 207, 208, 202, 216, 215, 206, 252,
+    238, 160, 161, 230, 164, 165, 228, 163,
+    229, 168, 169, 170, 171, 172, 173, 174,
+    175, 239, 224, 225, 226, 227, 166, 162,
+    236, 235, 167, 232, 237, 233, 231, 234,
+    158, 128, 129, 150, 132, 133, 148, 131,
+    149, 136, 137, 138, 139, 140, 141, 142,
+    143, 159, 144, 145, 146, 147, 134, 130,
+    156, 155, 135, 152, 157, 153, 151, 154
+};
+
+
+// koi8-r -> win1251
+static unsigned char win1251[128] = {
+    128, 129, 130, 131, 132, 133, 134, 135,
+    136, 137, 138, 139, 140, 141, 142, 143,
+    144, 145, 146, 147, 148, 149, 150, 151,
+    152, 153, 218, 155, 176, 157, 183, 159,
+    160, 161, 162, 184, 186, 165, 166, 191,
+    168, 169, 170, 171, 172, 173, 174, 175,
+    156, 177, 178, 168, 170, 181, 182, 175,
+    184, 185, 186, 187, 188, 189, 190, 185,
+    254, 224, 225, 246, 228, 229, 244, 227,
+    245, 232, 233, 234, 235, 236, 237, 238,
+    239, 255, 240, 241, 242, 243, 230, 226,
+    252, 251, 231, 248, 253, 249, 247, 250,
+    222, 192, 193, 214, 196, 197, 212, 195,
+    213, 200, 201, 202, 203, 204, 205, 206,
+    207, 223, 208, 209, 210, 211, 198, 194,
+    220, 219, 199, 216, 221, 217, 215, 218
+};
+
+
 /* Translate koi8-r string to utf-8 string.
  * String can be truncated if there is not enough buffer size.
  *
@@ -182,6 +224,66 @@ size_t koi8r_to_utf8(const char *str, char *buf, size_t size) {
                 d[dlen++] = u[1];
                 d[dlen++] = u[2];
             }
+        }
+    }
+
+    d[dlen] = 0;
+    return dlen;
+}
+
+
+/* Translate koi8-r string to ibm866 string.
+ * String can be truncated if there is not enough buffer size.
+ *
+ * In:
+ *      str - source string in koi8-r encoding
+ *      buf - ptr to receiving buffer
+ *      size - buffer size
+ * Return:
+ *      number of bytes written to buffer
+ */
+size_t koi8r_to_866(const char *str, char *buf, size_t size) {
+    const unsigned char *s = (const unsigned char*)str;
+    unsigned char *d = (unsigned char*)buf;
+    size_t dlen = 0;
+    size--;
+
+    for (; *s && dlen < size; s++) {
+        unsigned char c = *s;
+        if (c < 0x80) {
+            d[dlen++] = c;
+        } else {
+            d[dlen++] = ibm866[c-0x80];
+        }
+    }
+
+    d[dlen] = 0;
+    return dlen;
+}
+
+
+/* Translate koi8-r string to win1251 string.
+ * String can be truncated if there is not enough buffer size.
+ *
+ * In:
+ *      str - source string in koi8-r encoding
+ *      buf - ptr to receiving buffer
+ *      size - buffer size
+ * Return:
+ *      number of bytes written to buffer
+ */
+size_t koi8r_to_1251(const char *str, char *buf, size_t size) {
+    const unsigned char *s = (const unsigned char*)str;
+    unsigned char *d = (unsigned char*)buf;
+    size_t dlen = 0;
+    size--;
+
+    for (; *s && dlen < size; s++) {
+        unsigned char c = *s;
+        if (c < 0x80) {
+            d[dlen++] = c;
+        } else {
+            d[dlen++] = win1251[c-0x80];
         }
     }
 
